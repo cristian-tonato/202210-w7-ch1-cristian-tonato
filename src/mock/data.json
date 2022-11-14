@@ -1,0 +1,19 @@
+{
+    "Games": [
+        {
+            "id": 1,
+            "title": "God of War: Ragnarok",
+            "platform": "PS5"
+        },
+        {
+            "id": 2,
+            "title": "Mario + Rabbids Sparks of Hope",
+            "platform": "Switch"
+        },
+        {
+            "id": 3,
+            "title": "Bayonetta 3",
+            "platform": "Switch"
+        }
+    ]
+}
