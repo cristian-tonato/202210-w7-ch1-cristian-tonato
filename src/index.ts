@@ -21,6 +21,7 @@ server.on('listening', () => {
     console.log(`Listening on ${bind}`);
 });
 
+
 server.on('error', (error: CustomError, response: http.ServerResponse) => {
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
