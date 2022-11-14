@@ -4,6 +4,11 @@ import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-
 dotenv.config();
 import { CustomError } from './interfaces/error.js';
 
+const jsonServer = require('json-server');
+
+const router = jsonServer.router('db.json'); // <== Will be created later
+const middlewares = jsonServer.defaults();
+
 const port = 3300;
 const server = http.createServer(app);
 server.on('listening', () => {
@@ -21,7 +26,6 @@ server.on('listening', () => {
     console.log(`Listening on ${bind}`);
 });
 
-
 server.on('error', (error: CustomError, response: http.ServerResponse) => {
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
@@ -30,3 +34,5 @@ server.on('error', (error: CustomError, response: http.ServerResponse) => {
 });
 
 server.listen(port);
+server.use(middlewares);
+server.use(router);
