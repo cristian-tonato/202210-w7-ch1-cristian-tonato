@@ -1,48 +1,97 @@
 import { NextFunction, Request, Response } from 'express';
-import { Games } from '../interfaces/games.js';
-import importData from "..//mock//data.json" assert { type: 'json' };
-
-// eslint-disable-next-line prefer-const
-let data: Array<Games> = importData.Games;
+import { Data } from '../data/data.js';
+import { HTTPError } from '../interfaces/error.js';
+import { Games } from "../interfaces/games";
 
 export class GamesController {
-    getAll(req: Request, resp: Response) {
-        resp.json(data);
-        resp.end();
-    }
-
-    get(req: Request, resp: Response) {
-        resp.json(data);
-        resp.end();
-    }
-
-    post(req: Request, resp: Response) {
-        const newGames = {
-            ...req.body,
-            id: data.length + 1,
-        };
-        data.push(newGames);
-        resp.json(newGames);
-        resp.end();
-    }
-
-    patch(req: Request, resp: Response) {
-        const updateGames = {
-            ...data.find((item) => item.id === +req.params.id),
-            ...req.body,
-        };
-        data[data.findIndex((item) => item.id === +req.params.id)] = updateGames;
-        resp.json(updateGames);
-        resp.end();
-    }
-
-    delete(req: Request, resp: Response, next: NextFunction) {
-        if (!data.find((item) => item.id === +req.params.id)) {
-            next(new Error('Not found'));
+    constructor(public dataModel: Data<Games>) {}
+    async getAll(req: Request, resp: Response, next: NextFunction) {
+        try {
+            const data = await this.dataModel.getAll();
+            resp.json(data).end();
+        } catch (error) {
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
             return;
         }
-        data = data.filter((item) => item.id !== +req.params.id);
-        resp.json({});
-        resp.end();
+    }
+
+    async post(req: Request, resp: Response, next: NextFunction) {
+        if (!req.body.title) {
+            const httpError = new HTTPError(
+                406,
+                'Not Acceptable',
+                'Title not included in the data'
+            );
+            next(httpError);
+            return;
+        }
+        try {
+            const newGames = await this.dataModel.post(req.body);
+            resp.json(newGames).end();
+        } catch (error) {
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
+        }
+    }
+
+    async patch(req: Request, resp: Response, next: NextFunction) {
+        try {
+            const updateGames = await this.dataModel.patch(
+                +req.params.id,
+                req.body
+            );
+            resp.json(updateGames).end();
+        } catch (error) {
+            if ((error as Error).message === 'Not found id') {
+                const httpError = new HTTPError(
+                    404,
+                    'Not Found',
+                    (error as Error).message
+                );
+                next(httpError);
+                return;
+            }
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
+        }
+    }
+
+    async delete(req: Request, resp: Response, next: NextFunction) {
+        try {
+            await this.dataModel.delete(+req.params.id);
+            resp.json({}).end();
+        } catch (error) {
+            if ((error as Error).message === 'Not found id') {
+                const httpError = new HTTPError(
+                    404,
+                    'Not Found',
+                    (error as Error).message
+                );
+                next(httpError);
+                return;
+            }
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
+        }
     }
 }
