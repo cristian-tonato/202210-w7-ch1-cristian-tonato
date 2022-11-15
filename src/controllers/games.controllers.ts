@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Data } from '../data/data.js';
 import { HTTPError } from '../interfaces/error.js';
-import { Games } from "../interfaces/games";
+import { Games } from "../interfaces/games.js";
 
 export class GamesController {
     constructor(public dataModel: Data<Games>) {}
@@ -18,6 +18,9 @@ export class GamesController {
             next(httpError);
             return;
         }
+    }
+    get(req: Request, resp: Response) {
+        //
     }
 
     async post(req: Request, resp: Response, next: NextFunction) {
