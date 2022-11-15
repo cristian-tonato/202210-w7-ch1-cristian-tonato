@@ -7,7 +7,6 @@ export const gamesRouter = Router();
 const controller = new GamesController(new GamesFileData());
 
 gamesRouter.get('/', controller.getAll.bind(controller));
-
 gamesRouter.get('/:id', controller.get.bind(controller));
 gamesRouter.post('/', controller.post.bind(controller));
 gamesRouter.patch('/:id', controller.patch.bind(controller));

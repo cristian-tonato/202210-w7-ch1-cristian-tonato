@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (_req, res) => {
-    res.send('API Express de tareas').end();
+    res.send('Games').end();
 });
 
 app.use('/games', gamesRouter);
