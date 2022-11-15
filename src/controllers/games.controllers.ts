@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Games } from '../interfaces/games.js';
-import importData from "..//..//src/mock/data.json" assert { type: 'json' };
+import importData from "..//mock//data.json" assert { type: 'json' };
 
 // eslint-disable-next-line prefer-const
 let data: Array<Games> = importData.Games;
